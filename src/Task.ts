@@ -218,7 +218,7 @@ export class Task {
         const indentation = regexMatch[1];
 
         // Get the status of the task, only todo and done supported.
-        const statusString = regexMatch[2].toLowerCase();
+        const statusString = regexMatch[2]; //.toLowerCase();
         let status: Status;
         switch (statusString) {
             case ' ':

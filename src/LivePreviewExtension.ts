@@ -21,13 +21,15 @@ class LivePreviewExtension implements PluginValue {
         this.view.dom.removeEventListener('click', this.handleClickEvent);
     }
 
-    private handleClickEvent(event: MouseEvent): boolean {
-        const { target } = event;
+    private handleClickEvent(event: UIEvent): boolean {
+        if (!event.instanceOf(MouseEvent) || !event.targetNode) return false;
+
+        const target: Node = event.targetNode;
 
         // Only handle checkbox clicks.
         if (
             !target ||
-            !(target instanceof HTMLInputElement) ||
+            !target.instanceOf(HTMLInputElement) ||
             target.type !== 'checkbox'
         ) {
             return false;
