@@ -4,6 +4,9 @@ on:
     branches: ['*']
   pull_request:
     branches: [main]
+
+permissions: read_all
+    
 jobs:
   validate:
     runs-on: ubuntu-latest
