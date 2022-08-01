@@ -1,6 +1,12 @@
 import { MetadataCache, TAbstractFile, TFile, Vault } from 'obsidian';
-import type { CachedMetadata, ListItemCache } from 'obsidian';
-import type { EventRef, SectionCache } from 'obsidian';
+import type {
+    CachedMetadata,
+    EventRef,
+    HeadingCache,
+    ListItemCache,
+    SectionCache,
+    TagCache,
+} from 'obsidian';
 import { Mutex } from 'async-mutex';
 
 import { Task } from './Task';
@@ -231,7 +237,7 @@ export class Cache {
             return;
         }
 
-        if (this.getState() == State.Warm) {
+        if (this.getState() === State.Warm) {
             console.debug(
                 `At least one task, its line number or its heading has changed in ${file.path}: triggering a refresh of all active Tasks blocks in Live Preview and Reading mode views.`,
             );
@@ -256,6 +262,16 @@ export class Cache {
         file: TFile,
     ): Task[] {
         const tasks: Task[] = [];
+
+        if (!fileCache.sections) {
+            // Cannot parse tasks without sections
+            return tasks;
+        }
+
+        const listSections = fileCache.sections.filter(
+            (s) => s.type === 'list',
+        );
+
         const fileLines = fileContent.split('\n');
 
         // We want to store section information with every task so
@@ -274,7 +290,7 @@ export class Cache {
                     // Find the section that is relevant for this task and the following of the same section.
                     currentSection = Cache.getSection({
                         lineNumberTask: listItem.position.start.line,
-                        sections: fileCache.sections,
+                        sections: listSections,
                     });
                     sectionIndex = 0;
                 }
@@ -290,14 +306,19 @@ export class Cache {
                     path: file.path,
                     sectionStart: currentSection.position.start.line,
                     sectionIndex,
-                    precedingHeader: Cache.getPrecedingHeader({
-                        lineNumberTask: listItem.position.start.line,
-                        sections: fileCache.sections,
-                        fileLines,
-                    }),
+                    precedingHeader: Cache.getPrecedingHeading(
+                        listItem.position.start.line,
+                        fileCache.headings,
+                    ),
                 });
 
                 if (task !== null) {
+                    const tagsOnTaskLine = Cache.getTagsOnLine(
+                        listItem.position.start.line,
+                        fileCache.tags,
+                    );
+                    tagsOnTaskLine;
+                    //task.tags = tagsOnTaskLine;
                     sectionIndex++;
                     tasks.push(task);
                 }
@@ -331,44 +352,41 @@ export class Cache {
         return null;
     }
 
-    private static getPrecedingHeader({
-        lineNumberTask,
-        sections,
-        fileLines,
-    }: {
-        lineNumberTask: number;
-        sections: SectionCache[] | undefined;
-        fileLines: string[];
-    }): string | null {
-        if (sections === undefined) {
+    private static getPrecedingHeading(
+        startLine: number,
+        headings: HeadingCache[] | undefined,
+    ): string | null {
+        if (headings === undefined) {
             return null;
         }
 
-        let precedingHeaderSection: SectionCache | undefined;
-        for (const section of sections) {
-            if (section.type === 'heading') {
-                if (section.position.start.line > lineNumberTask) {
-                    // Break out of the loop as the last header was the preceding one.
-                    break;
-                }
-                precedingHeaderSection = section;
+        let precedingHeading: string | null = null;
+
+        for (const heading of headings) {
+            if (heading.position.start.line > startLine) {
+                return precedingHeading;
+            }
+            precedingHeading = heading.heading;
+        }
+        return precedingHeading;
+    }
+
+    private static getTagsOnLine(
+        line: number,
+        tags: TagCache[] | undefined,
+    ): string[] | [] {
+        if (tags === undefined) {
+            return [];
+        }
+
+        const tagsOnLine: string[] = [];
+
+        for (const tag of tags) {
+            if (tag.position.start.line === line) {
+                tagsOnLine.push(tag.tag);
             }
         }
-        if (precedingHeaderSection === undefined) {
-            return null;
-        }
 
-        const lineNumberPrecedingHeader =
-            precedingHeaderSection.position.start.line;
-
-        const linePrecedingHeader = fileLines[lineNumberPrecedingHeader];
-
-        const headerRegex = /^#+ +(.*)/u;
-        const headerMatch = linePrecedingHeader.match(headerRegex);
-        if (headerMatch === null) {
-            return null;
-        } else {
-            return headerMatch[1];
-        }
+        return tagsOnLine;
     }
 }
