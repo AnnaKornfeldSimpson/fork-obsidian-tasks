@@ -31,7 +31,7 @@ jobs:
         run: yarn run test
 
       - name: Archive verified build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
         with:
           name: dist-verified
           path: |
