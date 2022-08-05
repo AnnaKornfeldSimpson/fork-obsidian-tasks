@@ -1,4 +1,4 @@
-import type { Moment } from 'moment';
+import type { moment } from 'obsidian';
 import type { Task } from '../../Task';
 import { DateParser } from '../DateParser';
 import { Field } from './Field';
@@ -80,7 +80,7 @@ export abstract class DateField extends Field {
      * @param task - a Task object
      * @protected
      */
-    protected abstract date(task: Task): Moment | null;
+    protected abstract date(task: Task): typeof moment.fn | null;
 
     /**
      * Determine whether a task that does not have the particular date value

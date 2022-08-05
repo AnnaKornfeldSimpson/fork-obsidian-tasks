@@ -1,4 +1,4 @@
-import type { Moment } from 'moment';
+import type { moment } from 'obsidian';
 import { Component, MarkdownRenderer } from 'obsidian';
 import { replaceTaskWithTasks } from './File';
 import { LayoutOptions } from './LayoutOptions';
@@ -73,10 +73,10 @@ export class Task {
 
     public readonly priority: Priority;
 
-    public readonly startDate: Moment | null;
-    public readonly scheduledDate: Moment | null;
-    public readonly dueDate: Moment | null;
-    public readonly doneDate: Moment | null;
+    public readonly startDate: typeof moment.fn | null;
+    public readonly scheduledDate: typeof moment.fn | null;
+    public readonly dueDate: typeof moment.fn | null;
+    public readonly doneDate: typeof moment.fn | null;
 
     public readonly recurrence: Recurrence | null;
     /** The blockLink is a "^" annotation after the dates/recurrence rules. */
@@ -242,10 +242,10 @@ export class Task {
         // strings are in the expected order after the description.
         let matched: boolean;
         let priority: Priority = Priority.None;
-        let startDate: Moment | null = null;
-        let scheduledDate: Moment | null = null;
-        let dueDate: Moment | null = null;
-        let doneDate: Moment | null = null;
+        let startDate: typeof moment.fn | null = null;
+        let scheduledDate: typeof moment.fn | null = null;
+        let dueDate: typeof moment.fn | null = null;
+        let doneDate: typeof moment.fn | null = null;
         let recurrenceRule: string = '';
         let recurrence: Recurrence | null = null;
         let tags: any = [];
@@ -587,9 +587,9 @@ export class Task {
         let newDoneDate = null;
 
         let nextOccurrence: {
-            startDate: Moment | null;
-            scheduledDate: Moment | null;
-            dueDate: Moment | null;
+            startDate: typeof moment.fn | null;
+            scheduledDate: typeof moment.fn | null;
+            dueDate: typeof moment.fn | null;
         } | null = null;
 
         if (newStatus !== Status.Todo) {
@@ -756,8 +756,8 @@ export class Task {
         // Compare Date fields
         args = ['startDate', 'scheduledDate', 'dueDate', 'doneDate'];
         for (const el of args) {
-            const date1 = this[el] as Moment | null;
-            const date2 = other[el] as Moment | null;
+            const date1 = this[el] as typeof moment.fn | null;
+            const date2 = other[el] as typeof moment.fn | null;
             if (Sort.compareByDate(date1, date2) !== 0) {
                 return false;
             }
@@ -855,7 +855,7 @@ export class Task {
         date,
     }: {
         signifier: string;
-        date: Moment;
+        date: typeof moment.fn;
     }): string {
         return `${signifier} ${date.format(Task.dateFormat)} (${date.from(
             window.moment().startOf('day'),

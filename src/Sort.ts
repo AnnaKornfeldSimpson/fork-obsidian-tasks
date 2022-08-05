@@ -1,4 +1,4 @@
-import type moment from 'moment';
+import type { moment } from 'obsidian';
 import type { Task } from './Task';
 import type { Query, SortingProperty } from './Query';
 
@@ -146,8 +146,8 @@ export class Sort {
     }
 
     public static compareByDate(
-        a: moment.Moment | null,
-        b: moment.Moment | null,
+        a: typeof moment.fn | null,
+        b: typeof moment.fn | null,
     ): -1 | 0 | 1 {
         if (a !== null && b === null) {
             return -1;

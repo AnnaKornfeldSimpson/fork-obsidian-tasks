@@ -42,7 +42,7 @@
     let parsedDueDate: string = '';
     let parsedRecurrence: string = '';
     let parsedDone: string = '';
-    let addGlobalFilterOnSave: boolean = false;
+    let addGlobalFilterOnSave = false;
 
     // 'weekend' abbreviation ommitted due to lack of space.
     let datePlaceholder =

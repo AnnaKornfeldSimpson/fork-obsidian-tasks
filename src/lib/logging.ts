@@ -1,5 +1,4 @@
-import moment from 'moment';
-import { Platform, Plugin } from 'obsidian';
+import { Platform, Plugin, moment as momentObs } from 'obsidian';
 /*
  * EventEmitter2 is an implementation of the EventEmitter module found in Node.js.
  * In addition to having a better benchmark performance than EventEmitter and being
@@ -135,7 +134,7 @@ export class LogManager extends EventEmitter2 {
         if (this.consoleLoggerRegistered) return this;
 
         this.onLogEntry((logEntry) => {
-            let msg = `[${moment().format('YYYYMMDDHHmmss')}][${
+            let msg = `[${momentObs.parseZone().format('YYYYMMDDHHmmss')}][${
                 logEntry.level
             }][${logEntry.module}]`;
 

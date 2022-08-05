@@ -1,13 +1,13 @@
-import type { Moment } from 'moment';
+import type * as obsidian from 'obsidian';
 import { RRule } from 'rrule';
 import { Sort } from './Sort';
 
 export class Recurrence {
     private readonly rrule: RRule;
     private readonly baseOnToday: boolean;
-    private readonly startDate: Moment | null;
-    private readonly scheduledDate: Moment | null;
-    private readonly dueDate: Moment | null;
+    private readonly startDate: typeof obsidian.moment.fn | null;
+    private readonly scheduledDate: typeof obsidian.moment.fn | null;
+    private readonly dueDate: typeof obsidian.moment.fn | null;
 
     /**
      * The reference date is used to calculate future occurrences.
@@ -22,7 +22,7 @@ export class Recurrence {
      * same relative distance to the due date as the original task. For example
      * "starts one week before it is due".
      */
-    private readonly referenceDate: Moment | null;
+    private readonly referenceDate: typeof obsidian.moment.fn | null;
 
     constructor({
         rrule,
@@ -34,10 +34,10 @@ export class Recurrence {
     }: {
         rrule: RRule;
         baseOnToday: boolean;
-        referenceDate: Moment | null;
-        startDate: Moment | null;
-        scheduledDate: Moment | null;
-        dueDate: Moment | null;
+        referenceDate: typeof obsidian.moment.fn | null;
+        startDate: typeof obsidian.moment.fn | null;
+        scheduledDate: typeof obsidian.moment.fn | null;
+        dueDate: typeof obsidian.moment.fn | null;
     }) {
         this.rrule = rrule;
         this.baseOnToday = baseOnToday;
@@ -54,9 +54,9 @@ export class Recurrence {
         dueDate,
     }: {
         recurrenceRuleText: string;
-        startDate: Moment | null;
-        scheduledDate: Moment | null;
-        dueDate: Moment | null;
+        startDate: typeof obsidian.moment.fn | null;
+        scheduledDate: typeof obsidian.moment.fn | null;
+        dueDate: typeof obsidian.moment.fn | null;
     }): Recurrence | null {
         try {
             const match = recurrenceRuleText.match(
@@ -73,7 +73,7 @@ export class Recurrence {
             if (options !== null) {
                 // Pick the reference date for recurrence based on importance.
                 // Assuming due date has the highest priority.
-                let referenceDate: Moment | null = null;
+                let referenceDate: typeof obsidian.moment.fn | null = null;
                 // Clone the moment objects.
                 if (dueDate) {
                     referenceDate = window.moment(dueDate);
@@ -127,9 +127,9 @@ export class Recurrence {
      * Returns the dates of the next occurrence or null if there is no next occurrence.
      */
     public next(): {
-        startDate: Moment | null;
-        scheduledDate: Moment | null;
-        dueDate: Moment | null;
+        startDate: typeof obsidian.moment.fn | null;
+        scheduledDate: typeof obsidian.moment.fn | null;
+        dueDate: typeof obsidian.moment.fn | null;
     } | null {
         let next: Date;
         if (this.baseOnToday) {
@@ -163,9 +163,9 @@ export class Recurrence {
 
             // Keep the relative difference between the reference date and
             // start/scheduled/due.
-            let startDate: Moment | null = null;
-            let scheduledDate: Moment | null = null;
-            let dueDate: Moment | null = null;
+            let startDate: typeof obsidian.moment.fn | null = null;
+            let scheduledDate: typeof obsidian.moment.fn | null = null;
+            let dueDate: typeof obsidian.moment.fn | null = null;
 
             // Only if a reference date is given. A reference date will exist if at
             // least one of the other dates is set.
