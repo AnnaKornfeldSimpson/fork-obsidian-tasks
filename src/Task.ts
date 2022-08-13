@@ -85,10 +85,10 @@ export class Task {
     public static readonly dateFormat = 'YYYY-MM-DD';
 
     // Main regex for parsing a line. It matches the following:
-    // - Indentation
+    // - Indentation (including > for potentially nested blockquotes or Obsidian callouts)
     // - Status character
     // - Rest of task after checkbox markdown
-    public static readonly taskRegex = /^([\s\t]*)[-*] +\[(.)\] *(.*)/u;
+    public static readonly taskRegex = /^([\s\t>]*)[-*] +\[(.)\] *(.*)/u;
 
     // Match on block link at end.
     public static readonly blockLinkRegex = / \^[a-zA-Z0-9-]+$/u;
@@ -867,7 +867,20 @@ export class Task {
      * Taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
      */
     private escapeRegExp(s: string) {
-        return s.replace(/([.*+?^=!:${}()|[]\/\\])/g, '\\$1');
+        // NOTE: = is not escaped, as doing so gives error:
+        //         Invalid regular expression: /(^|\s)hello\=world($|\s)/: Invalid escape
+        // NOTE: ! is not escaped, as doing so gives error:
+        //         Invalid regular expression: /(^|\s)hello\!world($|\s)/: Invalid escape
+        // NOTE: : is not escaped, as doing so gives error:
+        //         Invalid regular expression: /(^|\s)hello\:world($|\s)/: Invalid escape
+        //
+        // Explanation from @AnnaKornfeldSimpson in:
+        // https://github.com/esm7/obsidian-tasks/pull/18#issuecomment-1196115407
+        // From what I can tell, the three missing characters from the original regex - : ! =
+        // are all only considered to have special meanings if they directly follow
+        // a ? (all 3) or a ?< (! and =).
+        // So theoretically if the ? are all escaped, those three characters do not have to be.
+        return s.replace(/([.*+?^${}()|[\]/\\])/g, '\\$1');
     }
 
     /**
