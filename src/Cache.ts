@@ -1,6 +1,12 @@
 import { MetadataCache, TAbstractFile, TFile, Vault } from 'obsidian';
-import type { CachedMetadata, EventRef } from 'obsidian';
-import type { HeadingCache, ListItemCache, SectionCache } from 'obsidian';
+import type {
+    CachedMetadata,
+    EventRef,
+    HeadingCache,
+    ListItemCache,
+    SectionCache,
+    TagCache,
+} from 'obsidian';
 import { Mutex } from 'async-mutex';
 
 import { Task } from './Task';
@@ -288,6 +294,11 @@ export class Cache {
                 }
 
                 const line = fileLines[listItem.position.start.line];
+                const tagsOnLine = Cache.getTagsOnLine(
+                    listItem.position.start.line,
+                    fileCache.tags,
+                );
+                tagsOnLine;
                 const task = Task.fromLine({
                     line,
                     path: file.path,
@@ -346,5 +357,24 @@ export class Cache {
             precedingHeader = heading.heading;
         }
         return precedingHeader;
+    }
+
+    private static getTagsOnLine(
+        line: number,
+        tags: TagCache[] | undefined,
+    ): string[] | [] {
+        if (tags === undefined) {
+            return [];
+        }
+
+        const tagsOnLine: string[] = [];
+
+        for (const tag of tags) {
+            if (tag.position.start.line === line) {
+                tagsOnLine.push(tag.tag);
+            }
+        }
+
+        return tagsOnLine;
     }
 }
