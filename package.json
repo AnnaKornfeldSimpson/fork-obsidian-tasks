@@ -56,8 +56,5 @@
     "chrono-node": "2.3.9",
     "eventemitter2": "^6.4.5",
     "rrule": "^2.7.1"
-  },
-  "peerDependencies": {
-    "@codemirror/state": "^6.0.0"
   }
 }
