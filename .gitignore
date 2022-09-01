@@ -21,9 +21,6 @@ yarn-error.log
 # jest coverage files
 /coverage
 
-# jest coverage files
-/coverage
-
 # osx
 .DS_Store
 
